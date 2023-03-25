@@ -1,29 +1,57 @@
 package hr.tvz.lbican.studapp.controllers;
 
+import hr.tvz.lbican.studapp.command.StudentCommand;
 import hr.tvz.lbican.studapp.data.StudentDTO;
 import hr.tvz.lbican.studapp.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("students")
+@RequestMapping("student")
 @AllArgsConstructor
 public class StudentRestController {
     private StudentService studentService;
 
-    @GetMapping("all")
-    public List<StudentDTO> getAllStudents(){
-        return studentService.findStudents();
+    @GetMapping
+    public ResponseEntity<List<StudentDTO>> getAllStudents() {
+        List<StudentDTO> students = studentService.findStudents();
+        HttpStatus status = students.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK;
+
+        return ResponseEntity.status(status).body(students);
     }
 
-    @GetMapping("student/{jmbag}")
-    public Optional<StudentDTO> getStudent(@PathVariable String jmbag){
-        return studentService.getOneStudent(jmbag);
+    @GetMapping("/{jmbag}")
+    public ResponseEntity<StudentDTO> getStudentByJMBAG(@PathVariable final String jmbag){
+        return studentService.findByJMBAG(jmbag)
+                .map(ResponseEntity::ok)
+                .orElseGet(
+                        () -> ResponseEntity.notFound().build()
+                );
+    }
+
+    @PostMapping
+    public ResponseEntity<StudentDTO> save(@Valid @RequestBody final StudentCommand command) {
+        return studentService.save(command)
+                .map(
+                        studentDTO -> ResponseEntity
+                                .status(HttpStatus.CREATED)
+                                .body(studentDTO)
+                )
+                .orElseGet(
+                        () -> ResponseEntity
+                                .status(HttpStatus.CONFLICT)
+                                .build()
+                );
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{jmbag}")
+    public void delete(@PathVariable String jmbag){
+        studentService.deleteByJMBAG(jmbag);
     }
 }

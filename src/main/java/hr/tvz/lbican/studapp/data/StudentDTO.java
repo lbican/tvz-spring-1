@@ -1,4 +1,4 @@
 package hr.tvz.lbican.studapp.data;
 
-public record StudentDTO(String name, String surname, boolean tuitionShouldBePaid) {
+public record StudentDTO(String firstName, String lastName, boolean tuitionShouldBePaid) {
 }

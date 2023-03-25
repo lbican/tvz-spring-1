@@ -7,5 +7,8 @@ import java.util.Optional;
 
 public interface StudentRepository {
     List<Student> findAll();
-    Optional<Student> findStudentByJmbag(String jmbag);
+    Optional<Student> findStudentByJMBAG(String jmbag);
+    Optional<Student> save(Student student);
+
+    void deleteStudentByJMBAG(String jmbag);
 }

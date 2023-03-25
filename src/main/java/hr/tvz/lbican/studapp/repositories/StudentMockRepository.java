@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -25,7 +26,22 @@ public class StudentMockRepository implements StudentRepository{
     }
 
     @Override
-    public Optional<Student> findStudentByJmbag(String jmbag) {
-        return studentList.stream().filter((student) -> student.getJmbag().equals(jmbag)).findAny();
+    public Optional<Student> findStudentByJMBAG(String jmbag) {
+        return studentList.stream().filter(student -> student.getJmbag().equals(jmbag)).findAny();
+    }
+
+    @Override
+    public Optional<Student> save(Student student) {
+        if(!studentList.contains(student)){
+            studentList.add(student);
+            return Optional.of(student);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public void deleteStudentByJMBAG(String jmbag) {
+        studentList.removeIf(it -> Objects.equals(it.getJmbag(), jmbag));
     }
 }

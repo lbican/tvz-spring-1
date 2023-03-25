@@ -1,5 +1,6 @@
 package hr.tvz.lbican.studapp.service;
 
+import hr.tvz.lbican.studapp.command.StudentCommand;
 import hr.tvz.lbican.studapp.data.StudentDTO;
 import hr.tvz.lbican.studapp.models.Student;
 import hr.tvz.lbican.studapp.repositories.StudentRepository;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -20,22 +20,40 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public List<StudentDTO> findStudents() {
-        return studentRepository.findAll().stream().map(this::mapStudentToDTO).collect(Collectors.toList());
+        return studentRepository.findAll().stream().map(this::mapStudentToDTO).toList();
     }
 
     @Override
-    public Optional<StudentDTO> getOneStudent(String jmbag) {
+    public Optional<StudentDTO> findByJMBAG(String jmbag) {
+        return studentRepository.findStudentByJMBAG(jmbag).map(this::mapStudentToDTO);
+    }
 
-        return studentRepository.findStudentByJmbag(jmbag).map(this::mapStudentToDTO);
+    @Override
+    public Optional<StudentDTO> save(StudentCommand studentCommand) {
+        return studentRepository.save(mapCommandToStudent(studentCommand)).map(this::mapStudentToDTO);
+    }
+
+    @Override
+    public void deleteByJMBAG(String jmbag) {
+        studentRepository.deleteStudentByJMBAG(jmbag);
     }
 
     private StudentDTO mapStudentToDTO(final Student student){
-        return new StudentDTO(student.getName(), student.getSurname(), this.shouldTuitionBePayed(student.getDateOfBirth()));
+        return new StudentDTO(student.getFirstName(), student.getLastName(), this.shouldTuitionBePayed(student.getDateOfBirth()));
     }
 
     private boolean shouldTuitionBePayed(LocalDate dateOfBirth){
         return dateOfBirth.plusYears(YEARS_AFTER_WHICH_TUITION_SHOULD_BE_PAYED).isBefore(LocalDate.now());
     }
 
+    private Student mapCommandToStudent(final StudentCommand studentCommand) {
+        return new Student(
+                studentCommand.getFirstName(),
+                studentCommand.getLastName(),
+                studentCommand.getDateOfBirth(),
+                studentCommand.getJmbag(),
+                studentCommand.getNumberOfECTS()
+        );
+    }
 
 }
