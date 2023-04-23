@@ -16,8 +16,8 @@ public class StudentMockRepository implements StudentRepository{
 
     public StudentMockRepository(){
         studentList = new ArrayList<>();
-        studentList.add(new Student("Luka", "Bićan", LocalDate.now().minusYears(21), "0246096016", 154));
-        studentList.add(new Student("Petar", "Bićan", LocalDate.now().minusYears(20), "0246096017", 36));
+        studentList.add(new Student(1L, "Luka", "Bićan", LocalDate.now().minusYears(21), "0246096016", 154));
+        studentList.add(new Student(2L, "Petar", "Bićan", LocalDate.now().minusYears(20), "0246096017", 36));
     }
 
     @Override

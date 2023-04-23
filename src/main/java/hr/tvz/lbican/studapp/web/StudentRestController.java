@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.controllers;
+package hr.tvz.lbican.studapp.web;
 
 import hr.tvz.lbican.studapp.command.StudentCommand;
 import hr.tvz.lbican.studapp.data.StudentDTO;
