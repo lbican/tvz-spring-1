@@ -1,34 +1,52 @@
 package hr.tvz.lbican.studapp.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
+@Entity
 public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NonNull
     private String firstName;
-
-    @NonNull
     private String lastName;
-
-    @NonNull
     private LocalDate dateOfBirth;
-
-    @NonNull
     private String jmbag;
 
-    @NonNull
+    @Column(name = "ects_points")
     private Integer numberOfECTS;
+
+    @ManyToMany(targetEntity = Course.class)
+    @JoinTable(
+            name = "student_course",
+            joinColumns = { @JoinColumn(name = "student_id") },
+            inverseJoinColumns = { @JoinColumn(name = "course_id") }
+    )
+    private List<Course> courses;
+
+    public Student(String firstName, String lastName, LocalDate dateOfBirth, String jmbag, Integer numberOfECTS) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.jmbag = jmbag;
+        this.numberOfECTS = numberOfECTS;
+    }
+
+    public Student(long id, String firstName, String lastName, LocalDate dateOfBirth, String jmbag, int numberOfECTS) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.jmbag = jmbag;
+        this.numberOfECTS = numberOfECTS;
+    }
 }
