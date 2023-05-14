@@ -1,10 +1,9 @@
-package hr.tvz.lbican.studapp.models;
+package hr.tvz.lbican.studapp.user;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -34,5 +33,5 @@ public class AppUser {
             name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private List<Authority> authorities;
+    private Set<Authority> authorities;
 }

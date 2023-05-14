@@ -1,8 +1,5 @@
-package hr.tvz.lbican.studapp.service;
+package hr.tvz.lbican.studapp.course;
 
-import hr.tvz.lbican.studapp.data.CourseDTO;
-import hr.tvz.lbican.studapp.models.Course;
-import hr.tvz.lbican.studapp.repositories.CourseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

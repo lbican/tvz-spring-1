@@ -1,9 +1,5 @@
-package hr.tvz.lbican.studapp.service;
+package hr.tvz.lbican.studapp.student;
 
-import hr.tvz.lbican.studapp.command.StudentCommand;
-import hr.tvz.lbican.studapp.data.StudentDTO;
-import hr.tvz.lbican.studapp.models.Student;
-import hr.tvz.lbican.studapp.repositories.StudentRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,5 @@
-package hr.tvz.lbican.studapp.repositories;
+package hr.tvz.lbican.studapp.student;
 
-import hr.tvz.lbican.studapp.models.Student;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;

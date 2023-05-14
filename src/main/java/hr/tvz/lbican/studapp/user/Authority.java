@@ -1,10 +1,9 @@
-package hr.tvz.lbican.studapp.models;
+package hr.tvz.lbican.studapp.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.Set;
 
 @Entity
 @Data
@@ -16,10 +15,7 @@ public class Authority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @Column(nullable = false, unique = true)
     private String name;
-
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "authorities")
-    private Set<AppUser> users;
-
 }

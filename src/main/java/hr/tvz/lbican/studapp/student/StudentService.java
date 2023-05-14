@@ -1,7 +1,7 @@
-package hr.tvz.lbican.studapp.service;
+package hr.tvz.lbican.studapp.student;
 
-import hr.tvz.lbican.studapp.command.StudentCommand;
-import hr.tvz.lbican.studapp.data.StudentDTO;
+import hr.tvz.lbican.studapp.student.StudentCommand;
+import hr.tvz.lbican.studapp.student.StudentDTO;
 
 import java.util.List;
 import java.util.Optional;

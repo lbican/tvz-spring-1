@@ -1,6 +1,5 @@
-package hr.tvz.lbican.studapp.repositories;
+package hr.tvz.lbican.studapp.user;
 
-import hr.tvz.lbican.studapp.models.AppUser;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,5 +1,6 @@
-package hr.tvz.lbican.studapp.models;
+package hr.tvz.lbican.studapp.student;
 
+import hr.tvz.lbican.studapp.course.Course;
 import jakarta.persistence.*;
 import lombok.*;
 

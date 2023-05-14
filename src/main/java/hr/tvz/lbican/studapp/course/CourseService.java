@@ -1,6 +1,6 @@
-package hr.tvz.lbican.studapp.service;
+package hr.tvz.lbican.studapp.course;
 
-import hr.tvz.lbican.studapp.data.CourseDTO;
+import hr.tvz.lbican.studapp.course.CourseDTO;
 
 import java.util.List;
 

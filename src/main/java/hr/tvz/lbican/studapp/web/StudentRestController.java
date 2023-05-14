@@ -1,8 +1,8 @@
 package hr.tvz.lbican.studapp.web;
 
-import hr.tvz.lbican.studapp.command.StudentCommand;
-import hr.tvz.lbican.studapp.data.StudentDTO;
-import hr.tvz.lbican.studapp.service.StudentService;
+import hr.tvz.lbican.studapp.student.StudentCommand;
+import hr.tvz.lbican.studapp.student.StudentDTO;
+import hr.tvz.lbican.studapp.student.StudentService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

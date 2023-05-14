@@ -1,7 +1,7 @@
 package hr.tvz.lbican.studapp.web;
 
-import hr.tvz.lbican.studapp.data.CourseDTO;
-import hr.tvz.lbican.studapp.service.CourseService;
+import hr.tvz.lbican.studapp.course.CourseDTO;
+import hr.tvz.lbican.studapp.course.CourseService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

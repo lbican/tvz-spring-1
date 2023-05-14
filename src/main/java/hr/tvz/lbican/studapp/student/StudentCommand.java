@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.command;
+package hr.tvz.lbican.studapp.student;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
