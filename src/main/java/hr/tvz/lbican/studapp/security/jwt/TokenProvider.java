@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -66,15 +67,23 @@ public class TokenProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
 
-        Collection<? extends GrantedAuthority> authorities = Arrays
-                .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .toList();
+        Collection<? extends GrantedAuthority> authorities;
+
+        if (claims.get(AUTHORITIES_KEY) != null && !claims.get(AUTHORITIES_KEY).toString().isEmpty()) {
+            authorities = Arrays
+                    .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                    .filter(authority -> !authority.trim().isEmpty()) // additional check for empty authorities
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+        } else {
+            authorities = new ArrayList<>(); // empty list of authorities
+        }
 
         User principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
+
 
     public boolean validateToken(String authToken) {
         try {

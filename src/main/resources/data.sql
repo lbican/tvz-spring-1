@@ -1,10 +1,3 @@
-delete from student_course;
-delete from student;
-delete from course;
-delete from USER_AUTHORITY;
-delete from APP_USER;
-delete from AUTHORITY;
-
 insert into student (id, first_name, last_name, jmbag, ects_points, date_of_birth)
 values (1, 'Luka', 'Bićan', '0246096016', 154, NOW());
 insert into student (id, first_name, last_name, jmbag, ects_points, date_of_birth)

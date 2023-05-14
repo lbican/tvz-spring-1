@@ -1,11 +1,12 @@
 package hr.tvz.lbican.studapp.security;
 
 import hr.tvz.lbican.studapp.data.AppUserDTO;
+import hr.tvz.lbican.studapp.data.AuthorityDTO;
 import hr.tvz.lbican.studapp.models.AppUser;
+import hr.tvz.lbican.studapp.models.Authority;
 import hr.tvz.lbican.studapp.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component("userDetailsService")
 public class DomainUserDetailsService implements UserDetailsService {
@@ -35,6 +37,16 @@ public class DomainUserDetailsService implements UserDetailsService {
     }
 
     @Transactional
+    public Optional<List<AuthorityDTO>> testFetchAuthorities(String username) {
+        Optional<AppUser> userOptional = userRepository.findOneByUsername(username);
+        return userOptional.map(user -> user.getAuthorities()
+                .stream()
+                .map(authority -> new AuthorityDTO(authority.getId(), authority.getName()))
+                .collect(Collectors.toList()));
+    }
+
+
+    @Transactional
     public Optional<AppUserDTO> getCurrentUser() {
         Optional<String> currentUsername = SecurityUtils.getCurrentUserUsername();
         return currentUsername.flatMap(username ->
@@ -42,8 +54,6 @@ public class DomainUserDetailsService implements UserDetailsService {
                         .map(this::mapAppUserToDTO)
         );
     }
-
-
 
 
     private org.springframework.security.core.userdetails.User createSpringSecurityUser(AppUser user) {
@@ -56,12 +66,24 @@ public class DomainUserDetailsService implements UserDetailsService {
     }
 
     private AppUserDTO mapAppUserToDTO(AppUser user){
+        List<AuthorityDTO> authorities = user.getAuthorities()
+                .stream()
+                .map(this::mapAuthorityToDTO)
+                .toList();
+
         return new AppUserDTO(
                 user.getId(),
                 user.getUsername(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getAuthorities()
+                authorities
+        );
+    }
+
+    private AuthorityDTO mapAuthorityToDTO(Authority authority){
+        return new AuthorityDTO(
+                authority.getId(),
+                authority.getName()
         );
     }
 

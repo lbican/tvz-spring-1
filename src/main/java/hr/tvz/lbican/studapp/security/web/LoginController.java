@@ -1,6 +1,7 @@
 package hr.tvz.lbican.studapp.security.web;
 
 import hr.tvz.lbican.studapp.data.AppUserDTO;
+import hr.tvz.lbican.studapp.data.AuthorityDTO;
 import hr.tvz.lbican.studapp.security.DomainUserDetailsService;
 import hr.tvz.lbican.studapp.security.jwt.JwtFilter;
 import hr.tvz.lbican.studapp.security.jwt.TokenProvider;
@@ -15,7 +16,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -59,7 +62,15 @@ public class LoginController {
         return currentUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 
-
+    @GetMapping("/user/{username}/authorities")
+    public ResponseEntity<Optional<List<AuthorityDTO>>> getUserAuthorities(@PathVariable String username){
+        Optional<List<AuthorityDTO>> authorities = domainUserDetailsService.testFetchAuthorities(username);
+        if (authorities.isPresent()) {
+            return ResponseEntity.ok(authorities);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 
     /**
