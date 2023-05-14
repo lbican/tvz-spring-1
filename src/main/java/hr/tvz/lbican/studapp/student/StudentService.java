@@ -1,8 +1,5 @@
 package hr.tvz.lbican.studapp.student;
 
-import hr.tvz.lbican.studapp.student.StudentCommand;
-import hr.tvz.lbican.studapp.student.StudentDTO;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -11,6 +8,8 @@ public interface StudentService {
     Optional<StudentDTO> findByJMBAG(String jmbag);
 
     Optional<StudentDTO> save(StudentCommand studentCommand);
+
+    Optional<StudentDTO> update(String JMBAG, StudentCommand updatedStudentCommand);
 
     void deleteByJMBAG(String jmbag);
 }

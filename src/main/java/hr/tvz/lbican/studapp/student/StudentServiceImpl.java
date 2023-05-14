@@ -30,6 +30,11 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
+    public Optional<StudentDTO> update(String JMBAG, StudentCommand updatedStudentCommand) {
+        return studentRepository.update(JMBAG, mapCommandToStudent(updatedStudentCommand)).map(this::mapStudentToDTO);
+    }
+
+    @Override
     public void deleteByJMBAG(String jmbag) {
         studentRepository.deleteStudentByJMBAG(jmbag);
     }

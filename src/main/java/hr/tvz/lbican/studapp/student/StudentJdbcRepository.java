@@ -49,6 +49,28 @@ public class StudentJdbcRepository implements StudentRepository {
     }
 
     @Override
+    public Optional<Student> update(String JMBAG, Student updatedStudent) {
+        int executed = jdbc.update("UPDATE student set " +
+                        "first_name = ?, " +
+                        "last_name = ?, " +
+                        "ects_points = ?, " +
+                        "date_of_birth = ? " +
+                        "WHERE jmbag = ?",
+                updatedStudent.getFirstName(),
+                updatedStudent.getLastName(),
+                updatedStudent.getNumberOfECTS(),
+                updatedStudent.getDateOfBirth(),
+                updatedStudent.getJmbag()
+        );
+
+        if (executed > 0) {
+            return Optional.of(updatedStudent);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public void deleteStudentByJMBAG(String jmbag) {
         jdbc.update("DELETE FROM student WHERE jmbag = ?", jmbag);
     }
