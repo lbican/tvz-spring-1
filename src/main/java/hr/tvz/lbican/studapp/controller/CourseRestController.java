@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.web;
+package hr.tvz.lbican.studapp.controller;
 
 import hr.tvz.lbican.studapp.course.CourseDTO;
 import hr.tvz.lbican.studapp.course.CourseService;

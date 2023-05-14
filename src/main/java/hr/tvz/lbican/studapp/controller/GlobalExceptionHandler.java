@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.web;
+package hr.tvz.lbican.studapp.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

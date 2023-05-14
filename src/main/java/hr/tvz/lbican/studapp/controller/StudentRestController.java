@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.web;
+package hr.tvz.lbican.studapp.controller;
 
 import hr.tvz.lbican.studapp.student.StudentCommand;
 import hr.tvz.lbican.studapp.student.StudentDTO;
@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,15 @@ public class StudentRestController {
                 );
     }
 
+    @Secured("ROLE_ADMIN")
+    @PutMapping("/{jmbag}")
+    public ResponseEntity<StudentDTO> update(@PathVariable String jmbag, @Valid @RequestBody final StudentCommand updateStudentCommand) {
+        return studentService.update(jmbag, updateStudentCommand)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @Secured("ROLE_ADMIN")
     @PostMapping
     public ResponseEntity<StudentDTO> save(@Valid @RequestBody final StudentCommand command) {
         return studentService.save(command)
@@ -50,6 +60,7 @@ public class StudentRestController {
                 );
     }
 
+    @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{jmbag}")
     public void delete(@PathVariable String jmbag){
