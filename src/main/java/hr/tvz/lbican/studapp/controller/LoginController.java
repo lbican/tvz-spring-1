@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.security.web;
+package hr.tvz.lbican.studapp.controller;
 
 import hr.tvz.lbican.studapp.security.DomainUserDetailsService;
 import hr.tvz.lbican.studapp.security.jwt.JwtFilter;

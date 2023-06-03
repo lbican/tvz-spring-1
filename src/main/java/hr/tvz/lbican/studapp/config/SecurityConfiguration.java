@@ -1,4 +1,4 @@
-package hr.tvz.lbican.studapp.security;
+package hr.tvz.lbican.studapp.config;
 
 import hr.tvz.lbican.studapp.security.jwt.JwtAuthenticationEntryPoint;
 import hr.tvz.lbican.studapp.security.jwt.JwtFilter;
