@@ -2,11 +2,15 @@ package hr.tvz.lbican.studapp.student;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudentCommand {
 
     @NotBlank(message = "First firstName must not be empty")

@@ -1,6 +1,7 @@
 package hr.tvz.lbican.studapp.student;
 
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,22 +22,40 @@ public class StudentServiceImpl implements StudentService{
 
     @Override
     public Optional<StudentDTO> findByJMBAG(String jmbag) {
-        return studentRepository.findStudentByJMBAG(jmbag).map(this::mapStudentToDTO);
+        return studentRepository.findStudentByJmbag(jmbag).map(this::mapStudentToDTO);
     }
 
     @Override
     public Optional<StudentDTO> save(StudentCommand studentCommand) {
-        return studentRepository.save(mapCommandToStudent(studentCommand)).map(this::mapStudentToDTO);
+        try {
+            Student savedStudent = studentRepository.save(mapCommandToStudent(studentCommand));
+            return Optional.of(mapStudentToDTO(savedStudent));
+        } catch (DataIntegrityViolationException e){
+            return Optional.empty();
+        }
     }
 
     @Override
-    public Optional<StudentDTO> update(String JMBAG, StudentCommand updatedStudentCommand) {
-        return studentRepository.update(JMBAG, mapCommandToStudent(updatedStudentCommand)).map(this::mapStudentToDTO);
+    public Optional<StudentDTO> update(String jmbag, StudentCommand updatedStudentCommand) {
+        Optional<Student> existingStudent = studentRepository.findStudentByJmbag(jmbag);
+        if(existingStudent.isPresent()) {
+            Student updatedStudent = existingStudent.get();
+            updatedStudent.setFirstName(updatedStudentCommand.getFirstName());
+            updatedStudent.setLastName(updatedStudentCommand.getLastName());
+            updatedStudent.setNumberOfECTS(updatedStudentCommand.getNumberOfECTS());
+            updatedStudent.setDateOfBirth(updatedStudentCommand.getDateOfBirth());
+            updatedStudent.setJmbag(updatedStudentCommand.getJmbag());
+            studentRepository.save(updatedStudent);
+            return Optional.of(mapStudentToDTO(updatedStudent));
+        } else {
+            return Optional.empty();
+        }
     }
+
 
     @Override
     public void deleteByJMBAG(String jmbag) {
-        studentRepository.deleteStudentByJMBAG(jmbag);
+        studentRepository.deleteByJmbag(jmbag);
     }
 
     private StudentDTO mapStudentToDTO(final Student student){

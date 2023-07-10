@@ -3,13 +3,15 @@ package hr.tvz.lbican.studapp.user;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "app_user")
 @Data
 @EqualsAndHashCode
+@NoArgsConstructor
 public class AppUser {
 
     @Id
@@ -33,5 +35,5 @@ public class AppUser {
             name = "user_authority",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "authority_id"))
-    private Set<Authority> authorities;
+    private List<Authority> authorities;
 }

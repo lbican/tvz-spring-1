@@ -10,6 +10,12 @@ values ('Web aplikacije u Javi', 6);
 insert into course (name, ects_points)
 values ('Programiranje u jeziku Java', 5);
 
+insert into QUESTION(QUESTION_TEXT) values ( 'Koliko je 2+2?' );
+insert into ANSWER(ANSWER_TEXT, IS_CORRECT, QUESTION_ID) VALUES ( '1', false, 1 );
+insert into ANSWER(ANSWER_TEXT, IS_CORRECT, QUESTION_ID) VALUES ( '2', false, 1 );
+insert into ANSWER(ANSWER_TEXT, IS_CORRECT, QUESTION_ID) VALUES ( '3', false, 1 );
+insert into ANSWER(ANSWER_TEXT, IS_CORRECT, QUESTION_ID) VALUES ( '4', true , 1 );
+
 insert into student_course (student_id, course_id)
 values (1, 1);
 insert into student_course (student_id, course_id)

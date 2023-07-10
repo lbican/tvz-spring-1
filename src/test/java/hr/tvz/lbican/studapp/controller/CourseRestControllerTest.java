@@ -1,67 +1,48 @@
 package hr.tvz.lbican.studapp.controller;
 
-import hr.tvz.lbican.studapp.course.CourseDTO;
-import hr.tvz.lbican.studapp.course.CourseService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@SpringBootTest
+@AutoConfigureMockMvc
 class CourseRestControllerTest {
 
-    @InjectMocks
-    private CourseRestController courseRestController;
-
-    @Mock
-    private CourseService courseService;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(courseRestController).build();
+    @Test
+    void getAllCourses() throws Exception {
+        this.mockMvc.perform(
+                get("/course")
+                        .with(csrf())
+                        .with(user("User").password("test").roles("USER"))
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$").isArray());
     }
 
-    @WithMockUser
     @Test
-    void testGetAllCourses() throws Exception {
-        CourseDTO courseDTO = new CourseDTO("Physics", 6);
-        when(courseService.findAll()).thenReturn(List.of(courseDTO));
+    void getStudentByJMBAG() throws Exception {
+        String STUDENT_JMBAG = "0246096016";
 
-        mockMvc.perform(get("/course")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name").value("Physics"))
-                .andExpect(jsonPath("$[0].numberOfECTS").value(6));
-    }
+        this.mockMvc.perform(
+                get("/course/{jmbag}", STUDENT_JMBAG)
+                        .with(csrf())
+                        .with(user("User").password("test").roles("USER"))
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andExpect(jsonPath("$").isArray());
 
-    @WithMockUser
-    @Test
-    void testGetStudentByJMBAG() throws Exception {
-        CourseDTO courseDTO = new CourseDTO("Physics", 6);
-        when(courseService.findAllByStudentJmbag(anyString())).thenReturn(List.of(courseDTO));
-
-        mockMvc.perform(get("/course/12345678901")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].name").value("Physics"))
-                .andExpect(jsonPath("$[0].numberOfECTS").value(6));
     }
 }

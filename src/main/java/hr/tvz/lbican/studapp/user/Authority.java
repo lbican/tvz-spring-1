@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "authority")
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Authority {
 
     @Id
@@ -18,4 +22,7 @@ public class Authority {
     @NotNull
     @Column(nullable = false, unique = true)
     private String name;
+
+    @ManyToMany(targetEntity = AppUser.class, mappedBy = "authorities")
+    private List<AppUser> appUserList;
 }

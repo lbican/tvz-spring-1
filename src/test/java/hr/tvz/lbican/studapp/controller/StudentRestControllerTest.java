@@ -1,135 +1,140 @@
 package hr.tvz.lbican.studapp.controller;
 
-import hr.tvz.lbican.studapp.student.StudentDTO;
-import hr.tvz.lbican.studapp.student.StudentService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import hr.tvz.lbican.studapp.student.StudentCommand;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
 class StudentRestControllerTest {
 
-    @Mock
-    private StudentService studentService;
-
-    @InjectMocks
-    private StudentRestController studentRestController;
-
+    @Autowired
     private MockMvc mockMvc;
 
-    @Test
-    void getAllStudentsTest() throws Exception {
-        when(studentService.findStudents()).thenReturn(Collections.singletonList(new StudentDTO("1234567890", "John", "Doe", 120, true)));
+    @Autowired
+    private ObjectMapper objectMapper;
 
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(get("/student")
-                        .contentType(MediaType.APPLICATION_JSON))
+    @Test
+    void getAllStudents() throws Exception {
+        this.mockMvc.perform(
+                get("/student")
+                        .with(user("Admin").password("test").roles("ADMIN"))
+        )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].jmbag").value("1234567890"))
-                .andExpect(jsonPath("$[0].firstName").value("John"))
-                .andExpect(jsonPath("$[0].lastName").value("Doe"))
-                .andExpect(jsonPath("$[0].numberOfECTS").value(120));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
-    void getStudentByJMBAGTest() throws Exception {
-        when(studentService.findByJMBAG(anyString())).thenReturn(Optional.of(new StudentDTO("1234567890", "John", "Doe", 120, true)));
+    void getNotExistingStudentByJMBAG() throws Exception {
+        String JMBAG_TO_FETCH = "0246096030";
 
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(get("/student/1234567890")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.jmbag").value("1234567890"))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"))
-                .andExpect(jsonPath("$.numberOfECTS").value(120));
+        this.mockMvc.perform(
+                get("/student/{jmbag}", JMBAG_TO_FETCH)
+                        .with(user("User").password("user").roles("USER"))
+                        .with(csrf())
+        ).andExpect(status().isNotFound());
     }
 
     @Test
-    void getEmptyStudentByJmbagTest() throws Exception {
-        when(studentService.findByJMBAG(anyString())).thenReturn(Optional.empty());
+    void updateNonExistingStudent() throws Exception{
+        StudentCommand studentCommand = new StudentCommand("Luka", "Bićan", "0246096030", LocalDate.now().minusYears(21), 180);
 
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(get("/student/1234567890")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DirtiesContext
-    void saveStudentTest() throws Exception {
-        when(studentService.save(any())).thenReturn(Optional.of(new StudentDTO("1234567890", "John", "Doe", 120, true)));
-
-        String jsonStudentCommand = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"jmbag\": \"1234567890\", \"dateOfBirth\": \"01.01.2000.\", \"numberOfECTS\": 120 }";
-
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(post("/student")
+        this.mockMvc.perform(
+                put("/student/{jmbag}", studentCommand.getJmbag())
+                        .with(user("Admin").password("test").roles("ADMIN"))
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentCommand))
+                        .content(objectMapper.writeValueAsString(studentCommand))
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateExistingStudent() throws Exception{
+        StudentCommand studentCommand = new StudentCommand("Lukas", "Bićan", "0246096016", LocalDate.now().minusYears(21), 180);
+
+        this.mockMvc.perform(
+                put("/student/{jmbag}", studentCommand.getJmbag())
+                        .with(user("Admin").password("test").roles("ADMIN"))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(studentCommand))
+                        .accept(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value(studentCommand.getFirstName()));
+    }
+
+    @Test
+    void saveNewStudent() throws Exception {
+        StudentCommand studentCommand = new StudentCommand("Luka", "Bićan", "0246096030", LocalDate.now().minusYears(21), 180);
+
+        this.mockMvc.perform(
+                        post("/student")
+                                .with(user("Admin").password("test").roles("ADMIN"))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(studentCommand))
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.jmbag").value("1234567890"))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"))
-                .andExpect(jsonPath("$.numberOfECTS").value(120));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.jmbag").value(studentCommand.getJmbag()))
+                .andExpect(jsonPath("$.firstName").value(studentCommand.getFirstName()))
+                .andExpect(jsonPath("$.lastName").value(studentCommand.getLastName()));
     }
 
     @Test
-    @DirtiesContext
-    void saveStudentConflictTest() throws Exception {
-        when(studentService.save(any())).thenReturn(Optional.empty());
+    void saveExistingStudent() throws Exception {
+        StudentCommand studentCommand = new StudentCommand("Luka", "Bićan", "0246096016", LocalDate.now().minusYears(21), 180);
 
-        String jsonStudentCommand = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"jmbag\": \"1234567890\", \"dateOfBirth\": \"01.01.2000.\", \"numberOfECTS\": 120 }";
-
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(post("/student")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentCommand))
+        this.mockMvc.perform(
+                        post("/student")
+                                .with(user("Admin").password("test").roles("ADMIN"))
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(studentCommand))
+                                .accept(MediaType.APPLICATION_JSON)
+                )
                 .andExpect(status().isConflict());
     }
 
-
     @Test
-    @DirtiesContext
-    void updateStudentTest() throws Exception {
-        when(studentService.update(anyString(), any())).thenReturn(Optional.of(new StudentDTO("1234567890", "John", "Doe", 120, true)));
+    void deleteStudentWithAdminPrivileges() throws Exception {
+        String JMBAG_TO_DELETE = "0246096052";
 
-        String jsonStudentCommand = "{ \"firstName\": \"John\", \"lastName\": \"Doe\", \"jmbag\": \"1234567890\", \"dateOfBirth\": \"01.01.2000.\", \"numberOfECTS\": 120 }";
-
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(put("/student/1234567890")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonStudentCommand))
-                .andExpect(jsonPath("$.jmbag").value("1234567890"))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.lastName").value("Doe"))
-                .andExpect(jsonPath("$.numberOfECTS").value(120));
+        this.mockMvc.perform(
+                delete("/student/{jmbag}", JMBAG_TO_DELETE)
+                        .with(user("Admin").password("test").roles("ADMIN"))
+                .with(csrf())
+        ).andExpect(status().isNoContent());
     }
 
     @Test
-    @DirtiesContext
-    void deleteStudentTest() throws Exception {
-        doNothing().when(studentService).deleteByJMBAG(anyString());
+    void deleteStudentWithUserPrivileges() throws Exception {
+        String JMBAG_TO_DELETE = "0246096052";
 
-        mockMvc = MockMvcBuilders.standaloneSetup(studentRestController).build();
-        mockMvc.perform(delete("/student/1234567890")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+        this.mockMvc.perform(
+                delete("/student/{jmbag}", JMBAG_TO_DELETE)
+                        .with(user("User").password("user").roles("USER"))
+                        .with(csrf())
+        ).andExpect(status().isForbidden());
     }
 }

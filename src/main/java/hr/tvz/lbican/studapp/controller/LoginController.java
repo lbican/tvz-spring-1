@@ -1,6 +1,7 @@
 package hr.tvz.lbican.studapp.controller;
 
 import hr.tvz.lbican.studapp.security.DomainUserDetailsService;
+import hr.tvz.lbican.studapp.security.LoginDTO;
 import hr.tvz.lbican.studapp.security.jwt.JwtFilter;
 import hr.tvz.lbican.studapp.security.jwt.TokenProvider;
 import hr.tvz.lbican.studapp.user.AppUserDTO;
@@ -35,7 +36,7 @@ public class LoginController {
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<JWTToken> authenticate(@Valid @RequestBody LoginController.LoginDTO login) {
+    public ResponseEntity<JWTToken> authenticate(@Valid @RequestBody LoginDTO login) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 login.username(),
                 login.password()
@@ -78,7 +79,5 @@ public class LoginController {
             this.token = token;
         }
     }
-
-    record LoginDTO(@NotNull String username, @NotNull String password) {}
 
 }

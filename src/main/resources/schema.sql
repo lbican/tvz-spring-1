@@ -41,3 +41,15 @@ create table if not exists user_authority (
     foreign key (user_id) references app_user(id),
     foreign key (authority_id) references authority(id)
 );
+
+create table if not exists question (
+    id identity,
+    question_text text
+);
+
+create table if not exists answer (
+    id identity,
+    is_correct boolean,
+    answer_text text,
+    question_id bigint
+)
